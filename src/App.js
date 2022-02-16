@@ -1,24 +1,41 @@
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import Dashboard from "./components/Dashboard";
+import Block from "./components/Block";
+import React, { useState, createContext } from "react";
+import Form from "./components/Form";
+import Login from "./components/Login";
+import Signup from "./components/Signup";
+
+export const UserContext = createContext({
+  user:null,
+  setUser: ()=>{}
+});
 
 function App() {
+  const [user, setUser] = useState(null);
+  const value = { user, setUser };
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <UserContext.Provider value={value}>
+      <div className="App">
+        <Router>
+          <Routes>
+            <Route exact path="/" element={<Login />}></Route>
+          </Routes>
+          <Routes>
+            <Route exact path="/signin" element={<Login />}></Route>
+          </Routes>
+          <Routes>
+            <Route exact path="/signup" element={<Signup />}></Route>
+          </Routes>
+          <Routes>
+            <Route exact path="/dashboard" element={<Dashboard />}></Route>
+          </Routes>
+          <Routes>
+            <Route exact path="/form" element={<Form />}></Route>
+          </Routes>
+        </Router>
+      </div>
+    </UserContext.Provider>
   );
 }
 
