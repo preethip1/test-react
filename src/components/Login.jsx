@@ -4,51 +4,54 @@ import { UserContext } from "../App";
 import validator from "validator";
 
 function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const { user, setUser } = useContext(UserContext);
-  const [loginError, setLoginError] = useState("");
+  let [email, setEmail] = useState("");
+  let [password, setPassword] = useState("");
+  let { user, setUser } = useContext(UserContext);
+  let [loginError, setLoginError] = useState("");
+  let [err, setErr] = useState(null);
 
-  const handleSignup = async () => {
+  const getUser = async () => {
     let user = JSON.parse(localStorage.getItem(email));
     if (user) {
       if (user.password === password) {
         setUser(user);
+        setErr(null);
       } else {
-        setLoginError("wrong password");
+        setErr("wrong password");
       }
     } else {
       let data = {
         email: email,
         password: password,
       };
-      let response = await fetch('https://reqres.in/api/login', {
-        method: 'POST',
+      let response = await fetch("https://reqres.in/api/login", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
       });
-      let result = await response.json();
-      console.log(result);
-      if (response.status !== 200){
-        throw new Error("user not present")
-      }
-      else {
+      if (response.status !== 200) {
+        setErr("user not present");
+      } else {
         user = {
-          email:email,
-          password:password,
-          drivers:[]
-        }
+          email: email,
+          password: password,
+          drivers: [],
+        };
         setUser(user);
-        localStorage.setItem(
-          email,
-          JSON.stringify(user)
-        );
+        setErr(null);
+        localStorage.setItem(email, JSON.stringify(user));
       }
     }
     if (!validator.isEmail(email)) {
-      setLoginError("Enter valid Email!");
+      setErr("Enter valid Email!");
+    }
+  };
+
+  const displayError = async () => {
+    if (err) {
+      setLoginError(err);
     }
   };
 
@@ -59,30 +62,38 @@ function Login() {
           LOGIN
         </h4>
         <input
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => {
+            email = e.target.value;
+            setEmail(email);
+            getUser();
+          }}
           placeholder="Enter your email"
           className="p-1 m-3 rounded bg-light border border-light"
         />
 
         <input
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) => {
+            password = e.target.value;
+            setPassword(password);
+            getUser();
+          }}
           type="password"
           placeholder="Enter your password"
           className="p-1 m-3 rounded bg-light border border-light"
         />
         <div className="d-flex justify-content-center align-center">
           <button
-            onClick={() => handleSignup()}
+            onClick={() => displayError()}
             type="button"
             className="btn btn-primary p-1 m-3 w-25 rounded "
           >
-            {user ? (
+            {err ? (
+              <span>Sign In</span>
+            ) : (
               <Link to="/dashboard" className="text-white text-decoration-none">
                 Sign In
               </Link>
-            ) : <span>Sign In</span>
-
-                }
+            )}
           </button>
         </div>
         <div className="d-flex justify-content-center text-secondary p-1 m-1">

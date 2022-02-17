@@ -3,8 +3,6 @@ import { Link } from "react-router-dom";
 import { useContext } from "react";
 import { UserContext } from "../App";
 
-// const user = useContext(UserContext);
-
 function Dashboard() {
   const { user, setUser } = useContext(UserContext);
   let drivers = JSON.parse(localStorage.getItem(user.email)).drivers;
